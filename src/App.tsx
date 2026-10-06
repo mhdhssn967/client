@@ -631,8 +631,7 @@ function App() {
         console.warn('Fullscreen/orientation lock failed:', err);
       }
 
-      const host = window.location.hostname;
-      const newSocket = io(`http://${host}:3001`);
+      const newSocket = io('https://server-vlef.onrender.com');
       
       setSocket(newSocket);
 
