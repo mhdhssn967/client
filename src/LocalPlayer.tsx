@@ -50,7 +50,7 @@ export function LocalPlayer({ socket }: { socket: Socket | null }) {
   // Throttle socket emits
   const lastEmit = useRef(0);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     let currentAnim = 'idle';
     const isShiftRun = keys.current['ShiftLeft'] || keys.current['ShiftRight'];
     const isAutoRun = walkStartTime.current && (Date.now() - walkStartTime.current) > 2000;

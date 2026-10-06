@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { Character } from './Character';
 import { io, Socket } from 'socket.io-client';
 
-type PlayerState = { x: number; y: number; z: number; rotation: number; animation: string; color?: string };
+type PlayerState = { x: number; y: number; z: number; rotation: number; animation: string; color?: string; hp?: number };
 type PlayersState = Record<string, PlayerState>;
 
 const mobileInput = {
@@ -103,7 +103,7 @@ function MobileControls({ hasBall }: { hasBall: boolean }) {
     setIsRunning(run);
   };
 
-  const handlePointerUp = (e: React.PointerEvent) => {
+  const handlePointerUp = () => {
     setStickPos({ x: 0, y: 0 });
     setIsRunning(false);
     mobileInput.x = 0;
@@ -205,12 +205,12 @@ function MobileControls({ hasBall }: { hasBall: boolean }) {
             onPointerMove={(e) => {
               handleThrowPointerMove(e);
             }}
-            onPointerUp={(e) => {
+            onPointerUp={() => {
               mobileInput.throw = false;
               setThrowStickPos({ x: 0, y: 0 });
               setIsThrowCancel(false);
             }}
-            onPointerCancel={(e) => {
+            onPointerCancel={() => {
               mobileInput.throw = false;
               setThrowStickPos({ x: 0, y: 0 });
               setIsThrowCancel(false);
@@ -261,7 +261,7 @@ function Projectiles({ newBalls, socket, localSocketId, currentPosition }: { new
     return tex;
   }, []);
 
-  useFrame((state, delta) => {
+  useFrame((_state, delta) => {
     if (!meshRef.current) return;
     meshRef.current.count = ballsData.current.length;
     const dummy = new THREE.Object3D();
@@ -413,7 +413,7 @@ function PlayerCharacter({ socket, color, hp, hasBall, setHasBall, currentPositi
   const speedRun = 12;
 
   const throwPhase = useRef<'idle' | 'windup' | 'release'>('idle');
-  const releaseTimer = useRef<NodeJS.Timeout | null>(null);
+  const releaseTimer = useRef<number | null>(null);
   const [trajectoryPoints, setTrajectoryPoints] = useState<THREE.Vector3[]>([]);
   const lastTrajUpdate = useRef({ x: 0, z: 0, rot: 0, power: 1 });
 
@@ -642,10 +642,12 @@ function App() {
 
       newSocket.on('currentPlayers', (currentPlayers: PlayersState) => {
         const others = { ...currentPlayers };
-        if (others[newSocket.id]?.color) {
-          setLocalColor(others[newSocket.id].color!);
+        if (newSocket.id) {
+          if (others[newSocket.id]?.color) {
+            setLocalColor(others[newSocket.id].color!);
+          }
+          delete others[newSocket.id];
         }
-        delete others[newSocket.id];
         setPlayers(others);
       });
 

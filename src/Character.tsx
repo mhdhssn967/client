@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
 import { useGLTF, useAnimations, Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { SkeletonUtils } from 'three-stdlib';
@@ -71,8 +71,8 @@ export function Character({ position, rotation, animation = 'idle', color = '#33
     }
     
     let currentAction = actions[actionName || ''];
-    let idleTimer: NodeJS.Timeout | null = null;
-    let throwTimer: NodeJS.Timeout | null = null;
+    let idleTimer: number | null = null;
+    let throwTimer: number | null = null;
 
     if (currentAction) {
       if (animation === 'idle') {
